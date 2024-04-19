@@ -1,0 +1,118 @@
+
+{% extends 'blog/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid pl-5" style="margin-top: 90px;">
+<div class="row card-body">
+    <div class="col-md-8">
+        <div class="row">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-warning bg-gradient-warning rounded text-white text-capitalize">
+                       Order Items
+                      </div>
+                      <div class="card-body">
+                          <table class="table table-stripped table-hover">
+                              <thead>
+                                  <tr>
+                                    <th>Sl.No</th>
+                                    <th>Product</th>
+                                    <th>Quanity</th>
+                                    <th>Unit Price</th>
+                                    <th>Price</th>
+                                    <th>*</th>
+                                  </tr>
+                              </thead>
+                              <tbody id="cart-order-items">
+                                  <td colspan="6" class="text-center text-muted"><i class="far fa-frown-open fa-2x"></i> No items are added</td>
+                              </tbody>
+                              <tfoot >
+                                  <td colspan="4" class="lead text-success">Grand Total</td>
+                                  <td colspan="2" class="gptotal lead text-success">0</td>
+                              </tfoot>
+                          </table>
+                      </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 ">
+        <div class="row">
+            <div class="col-12">
+                <div class="card shadow-sm ">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-12 text-primary text-bold">
+                                <i class="fas fa-paste fa-2x"></i> Billing Address 
+                                <div class="card ">
+                                    <div class="card-body bill-box text-dark">
+                                        <span> {{user.get_full_name}},</span>
+                                        <span> {{user.customer.address}}</span>
+                                        <span> pincode:{{user.customer.city.pincode}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 mt-3">
+                <div class="card shadow-sm ">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-12 text-success text-bold">
+                                <i class="fas fa-shipping-fast fa-2x "></i> Shipping Address 
+                                <button class="btn btn-sm btn-default float-right"><i class="fas fa-pencil-alt"></i></button>
+                                <div class="card ">
+                                    <div class="card-body address-box text-dark">
+                                        <span> {{user.customer.address}}</span>
+                                        <span class="pincode"> pincode:{{user.customer.city.pincode}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 mt-3">
+                <div class="card">
+                    <div class="card-body ">
+                        <p class="lead">Payment Mode:<span class="badge badge-pill badge-info float-right mt-1 pt-1"> COD</p>
+                        <hr />
+                        <div class="d-flex justify-content-center">
+                            <button class="btn btn-sm btn-success" id="ordernow"> Procced <i class="fas fa-arrow-circle-right "></i></button>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    order.populateItems()
+    $('#ordernow').on('click',function(){
+        od = {}
+        od['shipping_address'] = $('.address-box').text().trim().replace(/\s\s+/gm, ' ')
+        od['billing_address'] = $('.bill-box').text().trim().replace(/\s\s+/gm, ' ')
+        od['gtotal'] = order.updategrandtotal()
+        od['items']= order.getOrderItems();
+        $.ajax({
+            url: `{% url 'ecommerce:shopping.process' %}`,
+            type: "POST",
+            data: JSON.stringify(od),
+            contentType: "application/json"
+  
+        }).done(function(data){
+            localStorage.clear()
+            document.write(data)
+        })
+       
+    })
+</script>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends 'blog/base.html' %}
+
+{% block content %}
+<p>Products containing '{{ query_string }}'</p> 
+{% for product in products %}
+    <div>
+        <span> {{ product.created_at }} </span>
+        <a href="{% url 'product_detail' pk=product.pk %}"><h2 class="page-title">{{ product.name }}</h2></a>
+        <div class="product">
+            {{ product.content|safe }}
+        </div>
+    </div>
+{% empty %}
+    <p>No products found.</p>
+{% endfor %}
+{% endblock content %}

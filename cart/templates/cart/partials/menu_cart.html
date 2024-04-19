@@ -1,0 +1,10 @@
+{% comment %} {% load cart_tags %}  <!-- Nếu bạn sử dụng custom template tag --> {% endcomment %}
+
+<div>
+    {% if cart.items.count > 0 %}
+        <span>Cart: {{ cart.items.count }} item(s)</span>
+        {% comment %} <span>Total: ${{ cart.items.all|sum_cart_items }}</span> {% endcomment %}
+    {% else %}
+        <span>Cart is empty</span>
+    {% endif %}
+</div>

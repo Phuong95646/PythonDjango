@@ -1,0 +1,89 @@
+{% extends "blog/base.html" %}
+{% block content %}
+<h3>Cart ( {{ products|length }} items)</h3>
+
+<div class="item-area">
+  {% comment %} {% if messages %}
+  <div class="messages">
+    {% for product in products %}
+    <p {% if message.tags %} class="{{ message.tags }}" {% endif %}>
+      {{ message }}
+    </p>
+    {% endfor %}
+  </div>
+  {% endif %} {% endcomment %}
+
+  <form action="/" method="POST" onunload="calculateSingleItemPrice()">
+    {% csrf_token %} {{ products.management_form }}
+    <table id="cart-table">
+      <tr>
+        <th>Product</th>
+        <th>Quantity(kg)</th>
+        <th>Price(per kg)</th>
+        <th>Line Price</th>
+        <th>Action</th>
+      </tr>
+      <div class="cart-items">
+        {% for product in products %}
+
+        <tr class="cart-item">
+          <td>{{ product.name }}</td>
+
+          <td>
+            <input
+              type="number"
+              value="{{product.quantity}}"
+              class="currentProductQuantity"
+              name="{{product.name}}"
+              min="1"
+              oninput="calculateSingleItemPrice()"
+            />
+          </td>
+          <td>
+            AED
+            <input
+              type="number"
+              class="currentProductPrice"
+              value="{{product.price}}"
+              readonly
+            />
+          </td>
+          <td class="itemTotal">
+            AED
+            <input
+              type="text"
+              class="currentProductTotal"
+              value="{% widthratio product.price 1 product.quantity %}"
+              readonly
+            />
+          </td>
+          <td>
+            <button onclick="addToCart('{{product.name}}')">Add to Cart</button>
+          </td>
+        </tr>
+
+        {% endfor %}
+      </div>
+    </table>
+    <div class="btn-div">
+      <div class="sub-total">
+        <h4>
+          TOTAL PRICE: AED
+          <input class="totalPrice" id="total" type="text" value="" readonly />
+        </h4>
+      </div>
+      <input id="submit" type="submit" value="Buy" />
+    </div>
+  </form>
+</div>
+
+<script>
+  function addToCart(productName) {
+    var quantityInput = document.querySelector('input[name="' + productName + '"]');
+    var quantity = parseInt(quantityInput.value);
+    quantity += 1; // Tăng số lượng sản phẩm lên 1
+    quantityInput.value = quantity; // Cập nhật giá trị của input số lượng sản phẩm
+  }
+</script>
+
+{% endblock %}
